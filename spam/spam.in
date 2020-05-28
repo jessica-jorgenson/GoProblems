@@ -1,0 +1,16 @@
+
+       column   111111111122222222223333333333444444444455555555556
+       123456789012345678901234567890123456789012345678901234567890
+line 1:bob@banks.com wrote:[EOL]
+     2:>> What does <tt>x=7</tt> mean for this problem?  For[EOL]
+
+     3:>> example,[EOL]
+     4:>>[EOL]
+     5:>>   ..a@a@aa@aaa@aaa..a@a@aa@aaa@aaa..a@a..@a...a@..@..[EOL]
+     6:>>[EOL]
+
+     7:>> this scrolling @-example from jim@jones.com.[EOL]
+     8:>>[EOL]
+     9:>> <a href="mailto:Bobby@mail.bobsbanks.com">Bob</a>[EOL]
+
+      :[EOF]
