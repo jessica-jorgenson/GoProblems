@@ -147,7 +147,6 @@ func findCombos(allSums []string, arr []int, index int, givenNum int, reducedNum
 }
 
 func main() {
-	// After opening/preparing the files..
 	inputFile, err := os.Open("counting.in")
 	if err != nil {
 		fmt.Println(err)
@@ -166,13 +165,12 @@ func main() {
 		toSum, _ := strconv.Atoi(scanner.Text())
 		digitsArr := make([]int, toSum)
 		var sumsArr []string
-		// Combos is all the legal combinations (minus the combinations that use numbers higher than 3)
 		combos := findCombos(sumsArr, digitsArr, 0, toSum, toSum)
-		// Possibilities is when we replace the 1s with 4s in different places and such
 		getPoss := findOnes(combos)
 
 		outputFile.WriteString(fmt.Sprintf("%d\n", len(getPoss)))
 		outputFile.Sync()
 
 	}
+
 }

@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-// These first three functions are just basic functions to help me finish this problem
-
 func contains(arr []string, str string) bool {
 	for _, a := range arr {
 		if a == str {
@@ -35,20 +33,6 @@ func allMatch(arr []int) bool {
 	return true
 }
 
-// This function returns whether or not the given array goes above 4 (we change into the 4s later since Torsten doesn't know about 4s)
-func ignoreAbove3(arr []int) bool {
-	badNums := []int{4, 5, 6, 7, 8, 9}
-	for _, item := range arr {
-		for _, num := range badNums {
-			if item == num {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-// This function recursively gets all the different permutations of a sum (e.x. 42 to 24)
 func getPermutations(theStr string, index int, allPerms []string) []string {
 	if index == len(theStr) {
 		return allPerms
@@ -66,7 +50,18 @@ func getPermutations(theStr string, index int, allPerms []string) []string {
 	return allPerms
 }
 
-// After we find all the actual correct combinations, we do "Torsten's Rule" to recursively find all the possibilites of how 1s and 4s could fit
+func ignoreAbove3(arr []int) bool {
+	badNums := []int{4, 5, 6, 7, 8, 9}
+	for _, item := range arr {
+		for _, num := range badNums {
+			if item == num {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func replaceWithFours(theStr string, index int, currentPossibilities []string) []string {
 	if index == len(theStr) {
 		return currentPossibilities
@@ -87,7 +82,6 @@ func replaceWithFours(theStr string, index int, currentPossibilities []string) [
 	return currentPossibilities
 }
 
-// This simple function just sends any to-be-summed numbers that contain a 1 into the replaceWithFours function
 func findOnes(arr []string) []string {
 	var allPoss []string
 	for _, item := range arr {
@@ -103,10 +97,9 @@ func findOnes(arr []string) []string {
 	return allPoss
 }
 
-// This function recursively finds any number combination that sums to the given number
 func findCombos(allSums []string, arr []int, index int, givenNum int, reducedNum int) []string {
 
-	if reducedNum < 0 {
+	if reducedNum < 0 || index == len(arr) {
 		return allSums
 	}
 
@@ -119,7 +112,7 @@ func findCombos(allSums []string, arr []int, index int, givenNum int, reducedNum
 		}
 		result := strings.Join(valuesText, "")
 		allSums = append(allSums, result)
-		if !allMatch(arr[:index]) {
+		/*if !allMatch(arr[:index]) {
 			var allPerms []string
 			allPerms = getPermutations(result, 0, allPerms)
 			for _, item := range allPerms {
@@ -127,8 +120,8 @@ func findCombos(allSums []string, arr []int, index int, givenNum int, reducedNum
 					allSums = append(allSums, item)
 				}
 			}
-		}
-		return allSums
+			return allSums
+		}*/
 	}
 
 	prev := 0
@@ -147,7 +140,6 @@ func findCombos(allSums []string, arr []int, index int, givenNum int, reducedNum
 }
 
 func main() {
-	// After opening/preparing the files..
 	inputFile, err := os.Open("counting.in")
 	if err != nil {
 		fmt.Println(err)
@@ -166,13 +158,11 @@ func main() {
 		toSum, _ := strconv.Atoi(scanner.Text())
 		digitsArr := make([]int, toSum)
 		var sumsArr []string
-		// Combos is all the legal combinations (minus the combinations that use numbers higher than 3)
 		combos := findCombos(sumsArr, digitsArr, 0, toSum, toSum)
-		// Possibilities is when we replace the 1s with 4s in different places and such
 		getPoss := findOnes(combos)
-
-		outputFile.WriteString(fmt.Sprintf("%d\n", len(getPoss)))
-		outputFile.Sync()
+		fmt.Println(getPoss)
+		fmt.Println(len(getPoss))
 
 	}
+
 }
