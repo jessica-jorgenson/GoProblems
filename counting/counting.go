@@ -110,6 +110,11 @@ func findCombos(allSums []string, arr []int, index int, givenNum int, reducedNum
 		return allSums
 	}
 
+	if len(arr) == 0 {
+		allSums = append(allSums, "0")
+		return allSums
+	}
+
 	if reducedNum == 0 && !ignoreAbove3(arr) {
 		valuesText := []string{}
 		for k := 0; k < index; k++ {
