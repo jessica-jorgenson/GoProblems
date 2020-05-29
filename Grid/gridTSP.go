@@ -92,25 +92,35 @@ func getMinIdx(arr []int) int {
 	return idx
 }
 
+func getRows(path [][]int) string {
+	rowString := ""
+	for i, item := range path {
+		rowString = rowString + strconv.Itoa(item[0] + 1)
+		if i < len(path) - 1 {
+			rowString = rowString + " "
+		}
+	}
+	return rowString
+}
+
 func newGetPath(grid [][]int, currY int, currX int, path [][]int) [][]int {
 	dontGoPast := len(grid[0]) - 1
 	path = append(path, []int{currY, currX})
 	if currX == dontGoPast {
 		return path
-	} else {
-		adjNodes := getAdjNodes(currY, currX, len(grid) - 1)
-		var comparePaths [][][]int
-		for _, node := range adjNodes {
-			comparePaths = append(comparePaths, newGetPath(grid, node[0], node[1], path))
-		}
-
-		var weights []int
-		for _, paths := range comparePaths {
-			weights = append(weights, getTotalWeight(grid, paths))
-		}
-		return comparePaths[getMinIdx(weights)]
+	} 
+	
+	adjNodes := getAdjNodes(currY, currX, len(grid) - 1)
+	var comparePaths [][][]int
+	for _, node := range adjNodes {
+		comparePaths = append(comparePaths, newGetPath(grid, node[0], node[1], path))
 	}
-	return path
+
+	var weights []int
+	for _, paths := range comparePaths {
+		weights = append(weights, getTotalWeight(grid, paths))
+	}
+	return comparePaths[getMinIdx(weights)]
 }
 
 func main() {
@@ -155,7 +165,11 @@ func main() {
 			path := [][]int {
 			}
 			path = newGetPath(grid, 0, 0, path);
-			fmt.Println(path);
+			pathRowArr := getRows(path)
+			pathWeight := getTotalWeight(grid, path);
+			outputFile.WriteString(pathRowArr + "\n")
+			outputFile.WriteString(strconv.Itoa(pathWeight) + "\n")
+			outputFile.Sync()
 		}
 
 	}
