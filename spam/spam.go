@@ -41,6 +41,7 @@ func main() {
 	outputFile.WriteString("Start of Spam Program\n")
 
 	re := regexp.MustCompile(`((\w|\d|\-|\_)+(.?))+@((\w|\d|\-|\_)+(.?))+`)
+	// More Accurate regex: ^((([\w\d\_\-])\.?)*[^\.]@([\w\d\_\-]+\.?)*)*[^\.]$
 	for scanner.Scan() {
 		matches := re.FindAllString(scanner.Text(), -1)
 		for _, match := range matches {
