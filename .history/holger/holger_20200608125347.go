@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -28,6 +27,7 @@ func charJoin(charactersArr []characters) string {
 	for _, char := range charactersArr {
 		returnStr += char.letter
 	}
+	returnStr = strings.Replace(returnStr, "\n", "", -1)
 	return returnStr
 }
 
@@ -48,11 +48,7 @@ func formatCoords(words map[string][][]int, maxHeight int, maxWidth int) string 
 		if len(item) == 0 {
 			returnString += "-1 -1\n"
 			continue
-		} else if len(item) == 1 {
-			returnString += strconv.Itoa(item[0][0]+1) + " " + strconv.Itoa(item[0][1]+1) + "\n"
-			continue
 		}
-
 		var findLeftMost [][]int
 		findTopMost := maxHeight
 		for _, coor := range item {
@@ -94,6 +90,7 @@ func allChars(grid []string) []characters {
 			item.location = []int{row, col}
 			charactersArr = append(charactersArr, item)
 		}
+
 	}
 	return charactersArr
 }
@@ -119,7 +116,7 @@ func newSearch(scanner *bufio.Scanner, directions map[string]int) ([]string, []c
 	scanner.Scan()
 	dimensions := convertToIntArr(strings.Fields(scanner.Text()))
 	letterGrid := fillGrid(scanner, make([]string, dimensions[0]), dimensions[0])
-	charactersArr := trimNewLines(allChars(letterGrid))
+	charactersArr := allChars(letterGrid)
 	wordLocations := make(map[string][][]int)
 	return letterGrid, charactersArr, wordLocations
 }
@@ -136,48 +133,26 @@ func getWordsToFind(scanner *bufio.Scanner) []string {
 	return wordsToFind
 }
 
-func trimNewLines(charactersArr []characters) []characters {
-	if charactersArr[0].letter == "\n" {
-		return trimNewLines(charactersArr[1:])
-	} else if charactersArr[len(charactersArr)-1].letter == "\n" {
-		return trimNewLines(charactersArr[:len(charactersArr)-1])
-	} else {
-		return charactersArr
-	}
-}
-
 func getLooking(grid []string, words []string, charactersArr []characters, directions map[string]int, wordLocations map[string][][]int) map[string][][]int {
 	searchGrid := make(map[string][]characters)
-	var newLine characters
-	newLine.letter = "\n"
-	newLine.location = []int{-1, -1}
+
 	for wordDirection, directionNum := range directions {
 		for x := 0; x < len(grid[0]); x++ {
 			for i := x; i < len(charactersArr); i += len(grid[0]) + directionNum {
 				searchGrid[wordDirection] = append(searchGrid[wordDirection], charactersArr[i])
 			}
-			searchGrid[wordDirection] = append(searchGrid[wordDirection], newLine)
 		}
 	}
-
-	for dir, char := range searchGrid {
-		searchGrid[dir] = trimNewLines(char)
-	}
-
 	searchGrid["right"] = charactersArr
 	searchGrid["left"] = reverse(charactersArr)
 	searchGrid["up"] = reverse(searchGrid["down"])
 	searchGrid["up and left diag"] = reverse(searchGrid["down and right diag"])
 	searchGrid["up and right diag"] = reverse(searchGrid["down and left diag"])
 
-	for i, chars := range searchGrid {
-		fmt.Println(i)
-		fmt.Println(chars)
+	for _, chars := range searchGrid {
 		var theString = charJoin(chars)
-		fmt.Println(theString)
 		for _, word := range words {
-			regexWord := regexp.MustCompile(word)
-			if len(regexWord.FindAllStringIndex(theString, -1)) > 0 {
+			if strings.Contains(theString, word) {
 				wordLocations[word] = append(wordLocations[word], getLocation(chars, word))
 			}
 		}
@@ -221,18 +196,14 @@ func main() {
 	charactersArr := []characters{}
 	wordLocations := make(map[string][][]int)
 	toOutput := ""
-	cases := 0
 	for scanner.Scan() {
 		if len(scanner.Text()) == 0 {
-			cases++
-			if cases > 1 {
-				toOutput = "\n"
-			}
+			toOutput = ""
 			letterGrid, charactersArr, wordLocations = newSearch(scanner, directions)
 			wordsToFind = getWordsToFind(scanner)
 			wordLocations = makeWordLoc(wordsToFind)
 			wordLocations = getLooking(letterGrid, wordsToFind, charactersArr, directions, wordLocations)
-			toOutput += formatCoords(wordLocations, len(letterGrid), len(letterGrid[0]))
+			toOutput = formatCoords(wordLocations, len(letterGrid), len(letterGrid[0]))
 			outputFile.WriteString(toOutput)
 			outputFile.Sync()
 		}

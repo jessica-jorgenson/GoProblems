@@ -177,7 +177,7 @@ func getLooking(grid []string, words []string, charactersArr []characters, direc
 		fmt.Println(theString)
 		for _, word := range words {
 			regexWord := regexp.MustCompile(word)
-			if len(regexWord.FindAllStringIndex(theString, -1)) > 0 {
+			if regexWord.FindAllStringIndex(theString, -1) > 0 {
 				wordLocations[word] = append(wordLocations[word], getLocation(chars, word))
 			}
 		}

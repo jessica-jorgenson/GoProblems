@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -28,6 +27,7 @@ func charJoin(charactersArr []characters) string {
 	for _, char := range charactersArr {
 		returnStr += char.letter
 	}
+	//returnStr = strings.Replace(returnStr, "\n", "", -1)
 	return returnStr
 }
 
@@ -94,6 +94,7 @@ func allChars(grid []string) []characters {
 			item.location = []int{row, col}
 			charactersArr = append(charactersArr, item)
 		}
+
 	}
 	return charactersArr
 }
@@ -119,7 +120,7 @@ func newSearch(scanner *bufio.Scanner, directions map[string]int) ([]string, []c
 	scanner.Scan()
 	dimensions := convertToIntArr(strings.Fields(scanner.Text()))
 	letterGrid := fillGrid(scanner, make([]string, dimensions[0]), dimensions[0])
-	charactersArr := trimNewLines(allChars(letterGrid))
+	charactersArr := allChars(letterGrid)
 	wordLocations := make(map[string][][]int)
 	return letterGrid, charactersArr, wordLocations
 }
@@ -176,8 +177,7 @@ func getLooking(grid []string, words []string, charactersArr []characters, direc
 		var theString = charJoin(chars)
 		fmt.Println(theString)
 		for _, word := range words {
-			regexWord := regexp.MustCompile(word)
-			if len(regexWord.FindAllStringIndex(theString, -1)) > 0 {
+			if strings.Contains(theString, word) {
 				wordLocations[word] = append(wordLocations[word], getLocation(chars, word))
 			}
 		}
