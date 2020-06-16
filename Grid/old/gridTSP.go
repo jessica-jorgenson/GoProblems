@@ -114,6 +114,20 @@ func getRows(path [][]int) string {
 // This is the meat of the program
 func newGetPath(grid [][]int, currY int, currX int, path [][]int) [][]int {
 	// We ensure we're not at the end of our path
+
+	happyPath := [][]int{
+		{3, 0},
+		{2, 1},
+		{1, 2},
+		{2, 3},
+		{3, 4},
+		{4, 5},
+		{5, 6},
+	}
+
+	if reflect.DeepEqual(path, happyPath) {
+		fmt.Println("YO")
+	}
 	dontGoPast := len(grid[0]) - 1
 	path = append(path, []int{currY, currX})
 	if currX == dontGoPast {
@@ -121,18 +135,12 @@ func newGetPath(grid [][]int, currY int, currX int, path [][]int) [][]int {
 	}
 	// Otherwise, we go down all the possible paths
 	adjNodes := getAdjNodes(currY, currX, len(grid)-1)
-	var comparePaths [][][]int
+	//var comparePaths [][][]int
 	for _, node := range adjNodes {
-		comparePaths = append(comparePaths, newGetPath(grid, node[0], node[1], path))
+		return newGetPath(grid, node[0], node[1], path)
 	}
 
-	// To keep the function from returning every possible path ever,
-	// we nix the heavier weight paths
-	var weights []int
-	for _, paths := range comparePaths {
-		weights = append(weights, getTotalWeight(grid, paths))
-	}
-	return comparePaths[getMinIdx(weights)]
+	return path
 }
 
 func main() {
