@@ -52,7 +52,7 @@ func convertToIntArr(stringArr []string) []int {
 }
 
 func getAdjNodes(grid [][]gridNode, currentNode gridNode) []gridNode {
-	moveY := []int{-1, 0, 1}
+	moveY := []int{0, 1, -1}
 	var adjNodes []gridNode
 	maxHeight := len(grid)
 	nextCol := currentNode.getX() + 1
@@ -64,6 +64,18 @@ func getAdjNodes(grid [][]gridNode, currentNode gridNode) []gridNode {
 	}
 
 	return adjNodes
+}
+
+func getSmallestNode(nodes []gridNode) gridNode {
+	smallWeight := -1
+	var smallNode gridNode
+	for _, node := range nodes {
+		if smallWeight == -1 || node.weight < smallWeight {
+			smallWeight = node.weight
+			smallNode = node
+		}
+	}
+	return smallNode
 }
 
 func getNewY(gridHeight int, maybeY int) int {
@@ -118,12 +130,12 @@ func allSame(path []gridNode) bool {
 func findPath(grid [][]gridNode, currentNode gridNode, minWeightPath *[]gridNode, path []gridNode) {
 	path = append(path, currentNode)
 	if currentNode.isEnd {
-		if getPathWeight(path) < getPathWeight(*minWeightPath) || len(*minWeightPath) == 0 {
+		if (getPathWeight(path) < getPathWeight(*minWeightPath) && len(*minWeightPath) == len(grid[0])) || len(*minWeightPath) == 0 {
 			*minWeightPath = path
-			printPath(*minWeightPath)
 		}
 	} else {
 		currentNode.adjNodes = getAdjNodes(grid, currentNode)
+
 		for _, node := range currentNode.adjNodes {
 			findPath(grid, node, minWeightPath, path)
 		}
