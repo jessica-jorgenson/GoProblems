@@ -66,18 +66,6 @@ func getAdjNodes(grid [][]gridNode, currentNode gridNode) []gridNode {
 	return adjNodes
 }
 
-func getSmallestNode(nodes []gridNode) gridNode {
-	smallWeight := -1
-	var smallNode gridNode
-	for _, node := range nodes {
-		if smallWeight == -1 || node.weight < smallWeight {
-			smallWeight = node.weight
-			smallNode = node
-		}
-	}
-	return smallNode
-}
-
 func getNewY(gridHeight int, maybeY int) int {
 	if maybeY < 0 {
 		maybeY = gridHeight - 1
@@ -118,26 +106,16 @@ func getRows(path []gridNode) string {
 	return rowString
 }
 
-func allSame(path []gridNode) bool {
-	for _, node := range path {
-		if node.weight != 7 {
-			return false
-		}
-	}
-	return true
-}
-
-func findPath(grid [][]gridNode, currentNode gridNode, minWeightPath *[]gridNode, path []gridNode) {
+func findPath(grid [][]gridNode, currentNode gridNode, allPaths *[][]gridNode, path []gridNode) {
 	path = append(path, currentNode)
 	if currentNode.isEnd {
-		if (getPathWeight(path) < getPathWeight(*minWeightPath) && len(*minWeightPath) == len(grid[0])) || len(*minWeightPath) == 0 {
-			*minWeightPath = path
+		if len(path) == len(grid[0]) {
+			*allPaths = append(*allPaths, path)
 		}
 	} else {
 		currentNode.adjNodes = getAdjNodes(grid, currentNode)
-
 		for _, node := range currentNode.adjNodes {
-			findPath(grid, node, minWeightPath, path)
+			findPath(grid, node, allPaths, path)
 		}
 	}
 }
@@ -176,6 +154,22 @@ func makeGrid(scanner *bufio.Scanner) [][]gridNode {
 	return grid
 }
 
+func findMinWeight(paths [][]gridNode) []gridNode {
+	var smallestWeight []gridNode
+	for _, path := range paths {
+		currentWeight := getPathWeight(path)
+		smallest := getPathWeight(smallestWeight)
+		if getPathWeight(path) < getPathWeight(smallestWeight) || getPathWeight(smallestWeight) == 0 {
+			fmt.Println(smallest)
+			smallestWeight = path
+			fmt.Println(currentWeight)
+			printPath(path)
+			fmt.Println("")
+		}
+	}
+	return smallestWeight
+}
+
 func main() {
 	// After opening/preparing the files..
 	inputFile, err := os.Open("tsp.in")
@@ -194,16 +188,21 @@ func main() {
 
 	// We interate through the file
 	for scanner.Scan() {
-		var minWeightPath []gridNode
-		x := &minWeightPath
 		grid := makeGrid(scanner)
+		printGrid(grid)
 		var emptyPath []gridNode
+		var allPaths [][]gridNode
 		for _, row := range grid {
-			findPath(grid, row[0], x, emptyPath)
+			findPath(grid, row[0], &allPaths, emptyPath)
 		}
+		minWeightPath := findMinWeight(allPaths)
 
-		outputFile.WriteString(getRows(minWeightPath) + "\n")
-		outputFile.WriteString(strconv.Itoa(getPathWeight(minWeightPath)) + "\n")
+		pathRowArr := getRows(minWeightPath)
+		pathWeight := getPathWeight(minWeightPath)
+		fmt.Println(pathRowArr)
+		outputFile.WriteString(pathRowArr + "\n")
+		outputFile.WriteString(strconv.Itoa(pathWeight) + "\n")
 		outputFile.Sync()
+
 	}
 }
